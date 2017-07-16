@@ -1,0 +1,11 @@
+{
+    "smtp_host":"smtp.host.com",
+    "smtp_user":"service1@email.com",
+    "smtp_passwd":"your_smtp_password",
+    "smtp_port":465,
+    "sender":"service1@email.com",
+    "receivers":[
+        "email1@email.net",
+        "email2@email.com"
+    ]
+}
