@@ -35,7 +35,7 @@ def mailto(receivers):
 
         # 第三方 SMTP 服务
         smtp_host = mailjson["smtp_host"]  # SMTP服务器
-        smtp_port = mailjson["smtp_port"]
+        smtp_port = int(mailjson["smtp_port"])
         smtp_user = mailjson["smtp_user"]  # 用户名
         smtp_passwd = mailjson["smtp_passwd"]  # 密码
 

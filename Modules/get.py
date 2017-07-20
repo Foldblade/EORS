@@ -168,6 +168,6 @@ elif setting_json["mode"] == 'zuowennote':
     zuowennote()
 else:
     print('配置错误')
-    exit(1)
+    sys.exit(1)
 
 

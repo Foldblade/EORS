@@ -52,6 +52,11 @@ def speaker(words):
     return
 '''
 
+# 按钮 输出目录 被单击
+def button_opendir_click():
+    os.startfile(where_script + '/output')
+    return
+
 # 按钮 退出 被单击
 def button_exit_click():
     root.quit()
@@ -736,7 +741,11 @@ def button_offline_click():
 
 # 按钮 发布句子 被单击
 def button_write_click():
-    import Modules.get
+    try:
+        import Modules.get
+    except:
+        tkinter.messagebox.showerror('获取模组', '出……出错啦 TAT\n请检查配置/网络再试一次？\n(ㅅ´ ˘ `)♡~')
+        # 此处可能有一bug：即使无网络仍然显示发布句子窗口——也许编译运行时不会出现？待查。2017/7/18
     # 进行抓取操作，执行/Modules/get.py
 
     def button_back_click():
@@ -1169,36 +1178,41 @@ label2 = Label(top, text=nowdate, font=('思源黑体 CN Normal', 14), justify='
 label2.pack(side=BOTTOM, expand=YES, fill=BOTH)
 top.pack(side=TOP, expand=YES, fill=BOTH)
 
-# 五个按钮
+# 六个按钮
 buttons = Frame(root, width=180, height=180)
+opendirpng = PhotoImage(file=where_script+'/UI/opendir.png')
+button_opendir = Button(buttons, image=opendirpng, relief=FLAT, cursor='hand2', command=button_opendir_click)
+button_opendir.grid(row=0, column=1, sticky="nsew")
 quepng = PhotoImage(file=where_script+'/UI/que.png')
 button_about = Button(buttons, image=quepng, relief=FLAT, cursor='hand2', command=button_about_click)
-button_about.grid(row=0, column=1, sticky="nsew")
+button_about.grid(row=0, column=2, sticky="nsew")
 settingpng = PhotoImage(file=where_script+'/UI/setting.png')
 button_setting = Button(buttons, image=settingpng, relief=FLAT, cursor='hand2', command=button_setting_click)
-button_setting.grid(row=0, column=2, sticky="nsew")
+button_setting.grid(row=0, column=3, sticky="nsew")
 mailpng = PhotoImage(file=where_script+'/UI/mail.png')
 button_mail = Button(buttons, image=mailpng, relief=FLAT, cursor='hand2', command=button_mail_click)
-button_mail.grid(row=0, column=3, sticky="nsew")
+button_mail.grid(row=0, column=4, sticky="nsew")
 neterrorpng = PhotoImage(file=where_script+'/UI/neterror.png')
 button_offline = Button(buttons, image=neterrorpng, relief=FLAT, cursor='hand2', command=button_offline_click)
-button_offline.grid(row=0, column=4, sticky="nsew")
+button_offline.grid(row=0, column=5, sticky="nsew")
 writepng = PhotoImage(file=where_script+'/UI/write.png')
 button_write = Button(buttons, image=writepng, relief=FLAT, cursor='hand2', command=button_write_click)
-button_write.grid(row=0, column=5, sticky="nsew")
+button_write.grid(row=0, column=6, sticky="nsew")
 
 
-# 五个标签
+# 六个标签
+label_opendir = Label(buttons, text='输出目录', font=('思源黑体 CN Normal',12), justify='center',anchor='center')
+label_opendir.grid(row=1, column=1)
 label_about = Label(buttons, text='关于', font=('思源黑体 CN Normal',12), justify='center',anchor='center')
-label_about.grid(row=1, column=1)
+label_about.grid(row=1, column=2)
 label_setting = Label(buttons, text='设置', font=('思源黑体 CN Normal',12), justify='center',anchor='center')
-label_setting.grid(row=1, column=2)
+label_setting.grid(row=1, column=3)
 label_mail = Label(buttons, text='发送邮件', font=('思源黑体 CN Normal',12), justify='center',anchor='center')
-label_mail.grid(row=1, column=3)
+label_mail.grid(row=1, column=4)
 label_offline = Label(buttons, text='离线模式', font=('思源黑体 CN Normal',12), justify='center',anchor='center')
-label_offline.grid(row=1, column=4)
+label_offline.grid(row=1, column=5)
 label_write = Label(buttons, text='发布句子', font=('思源黑体 CN Normal',12), justify='center',anchor='center')
-label_write.grid(row=1, column=5)
+label_write.grid(row=1, column=6)
 buttons.pack(side=TOP, expand=YES, fill=Y)
 
 f = open(where_script+'/data/setting.json', 'r')
