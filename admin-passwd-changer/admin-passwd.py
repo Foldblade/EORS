@@ -13,9 +13,9 @@ print(
 ***********************************
 运行后，会在此程序运行目录下创建新的'password'文件。
 本程序将自动把'password'文件自动复制到程序主体目录的'/safety'文件夹下，覆盖原有'password'文件完成配置。
-（如果您是在使用安装程序，请无视以上内容——一切都是自动的，不用您操心）
+（如果您是在使用安装程序，请无视以上内容——上述都是本程序后台自动进行的，不用您操心）
 您的密码将不会以明文形式存储在您的计算机上。
-如果您遗忘了密码，您还可以在安装目录下找到本“管理密码修改器”再度进行设置。
+如果您遗忘了密码，您还可以在安装目录下找到本“管理密码修改器”再次进行设置。
 当然，安全起见，我建议您配置完密码后手动删除本程序。
 
 请务必阅读以上说明后再开始设置。
@@ -41,6 +41,10 @@ f.close()
 
 print('密码文件已经生成。')
 print('配置中……')
+
+if not os.path.exists(where_rootmenu + '/safety/password'):
+    os.mkdir(where_rootmenu + '/safety')
+
 shutil.copyfile(where_script + '/password', where_rootmenu + '/safety/password')
 
 if os.path.exists(where_rootmenu + '/safety/password'):

@@ -4,17 +4,25 @@ from tkinter import *
 import tkinter.messagebox
 #from tkinter.ttk import * # 这行去掉注释会引入windows最新的特性，不过下面的程序涉及relief就会报错
 import os
+import sys
 import datetime
 import linecache
 import json
 import codecs
 import hashlib
-# import win32com.client
-
+import requests
+import webbrowser
+import threading
+from bs4 import BeautifulSoup
+from Mypackage import get
+from Mypackage import back_to_yesterday
+from Mypackage import mail
+from Mypackage import backup
+from Mypackage import spvoice
 
 now = datetime.datetime.now()
 nowdate = now.strftime('%Y-%m-%d')
-nowyear = now.strftime('%Y')
+nowyear = str(int(now.strftime('%Y')))
 nowmonth = str(int(now.strftime('%m')))
 nowday = str(int(now.strftime('%d')))
 print(nowdate)
@@ -23,7 +31,9 @@ print(nowdate)
 where_script = os.path.split(os.path.realpath(__file__))[0]
 print(where_script)
 
-
+f = open(where_script+'/data/setting.json', 'r')
+setting_json = json.load(f)
+f.close()
 
 def get_screen_size(window):
     return window.winfo_screenwidth(), window.winfo_screenheight()
@@ -40,21 +50,34 @@ def center_window(root, width, height):
     print(size)
     root.geometry(size)
 
-'''可能是下一版本的更新内容
-def speaker(words):
-    f = open(where_script + '/data/setting.json', 'r')
-    setting_json = json.load(f)
-    f.close()
-    if setting_json["speaker"] == 'on':
-        speaker = win32com.client.Dispatch("SAPI.SpVoice")
-        speaker.Speak(words)
-
-    return
-'''
+# 检查更新
+def check_update():
+    try:
+        url = 'https://github.com/Foldblade/EORS/releases'
+        postdata = {
+            "headers": {
+                "User-Agent": 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.73 Safari/537.36'}
+        }
+        s = requests.session()
+        try:
+            r = requests.get(url, data=postdata, timeout=2)
+            response.encoding = 'utf-8'  # 修改编码为utf-8
+        except:
+            pass
+        r = r.text
+        webdata = BeautifulSoup(r, 'html.parser')
+        find_h1 = webdata.find_all('h1')
+        latest_version = str(find_h1[1].get_text())
+        latest_version = latest_version.replace('\r', '')
+        latest_version = latest_version.replace('\n', '')
+        latest_version = latest_version[1:]
+    except:
+        pass
+    return latest_version
 
 # 按钮 输出目录 被单击
 def button_opendir_click():
-    os.startfile(where_script + '/output')
+    os.startfile(where_script + '/output/' + nowyear )
     return
 
 # 按钮 退出 被单击
@@ -62,7 +85,6 @@ def button_exit_click():
     root.quit()
     sys.exit(0)
     return
-
 
 # 按钮 关于 被单击
 def button_about_click():
@@ -109,12 +131,11 @@ def button_about_click():
 def button_mail_click():
     # 用的是两个messagebox弹窗。画风就不一致了……也许日后再修复吧。
     try:
-        import Modules.mail
+        mail.mail()
         tkinter.messagebox.showinfo('邮件模组', '邮件发送成功！\n(ㅅ´ ˘ `)♡~')
     except:
         tkinter.messagebox.showerror('邮件模组', '出……出错啦 TAT\n请检查配置/网络再试一次？\n(ㅅ´ ˘ `)♡~')
     return
-
 
 # 按钮 设置 被单击
 def button_setting_click():
@@ -140,6 +161,13 @@ def button_setting_click():
         listbox2_newchosen = listbox2.get(listbox2.curselection())
         return listbox2_newchosen
 
+    def listbox3_show_msg(event):
+        global listbox3_newchosen
+        print(listbox3.get(listbox3.curselection()))
+        speaker_chosen.set('当前：' + listbox3.get(listbox3.curselection()))
+        listbox3_newchosen = listbox3.get(listbox3.curselection())
+        return listbox3_newchosen
+
     def back_to_ysd32_click():
         def button_back2_click():
             back_to_ysd_window.destroy()
@@ -161,7 +189,7 @@ def button_setting_click():
                     print('Correct! PASS!')
                     back_to_ysd_window.update_idletasks()
                     back_to_ysd_window.update()
-                    import Modules.back_to_yesterday
+                    back_to_yesterday.back_to_yesterday()
                     back_to_ysd_change.set('已经回到昨日！')
                 else:
                     print('Wrong passwd!')
@@ -245,6 +273,20 @@ def button_setting_click():
             except:
                 pass
 
+            try:
+                if listbox3_newchosen == 'ON':
+                    setting_json["speaker"] = "on"
+                    f = open(where_script+'/data/setting.json', 'w')
+                    json.dump(setting_json, f, indent=4, ensure_ascii=False)
+                    f.close()
+                elif listbox3_newchosen == 'OFF':
+                    setting_json["speaker"] = "off"
+                    f = open(where_script+'/data/setting.json', 'w')
+                    json.dump(setting_json, f, indent=4, ensure_ascii=False)
+                    f.close()
+                savemessage.set('保存啦 QwQ')
+            except:
+                pass
         except:
             savemessage.set('操作错误，未记录。')
 
@@ -275,12 +317,6 @@ def button_setting_click():
     selection = ['句子迷', '作文纸条']
     mode = StringVar(value=selection)
     listbox1 = Listbox(setting_area, height=2, width=7, selectmode=BROWSE, listvariable=mode, bd=1, bg='#f0f0f0')
-    '''
-    if setting_json["mode"] == 'juzimi':
-        listbox1.select_set(selection.index('句子迷'))
-    elif setting_json["mode"] == 'zuowennote':
-        listbox1.select_set(selection.index('作文纸条'))
-    '''
     listbox1.grid(row=1, column=2, sticky=W)
     listbox1.bind("<<ListboxSelect>>", listbox1_show_msg)
 
@@ -297,12 +333,6 @@ def button_setting_click():
     selection = ['ON', 'OFF']
     mode = StringVar(value=selection)
     listbox2 = Listbox(setting_area, height=2, width=7, selectmode=BROWSE, listvariable=mode, bd=1, bg='#f0f0f0')
-    '''
-    if setting_json["once"] == 'on':
-        listbox2.select_set(selection.index('ON'))
-    elif setting_json["once"] == 'off':
-        listbox2.select_set(selection.index('OFF'))
-    '''
     listbox2.grid(row=2, column=2, sticky=W)
     listbox2.bind("<<ListboxSelect>>", listbox2_show_msg)
 
@@ -314,11 +344,27 @@ def button_setting_click():
     Label2_follow = Label(setting_area, textvariable=once_chosen, font=('思源黑体 CN Normal', 14))
     Label2_follow.grid(row=2, column=3, sticky=W)
 
-    Label3 = Label(setting_area, text='回到昨日', font=('思源黑体 CN Normal', 14))
+    Label3 = Label(setting_area, text='朗读句子', font=('思源黑体 CN Normal', 14))
     Label3.grid(row=3, column=1, sticky=W)
+    selection = ['ON', 'OFF']
+    speaker = StringVar(value=selection)
+    listbox3 = Listbox(setting_area, height=2, width=7, selectmode=BROWSE, listvariable=speaker, bd=1, bg='#f0f0f0')
+    listbox3.grid(row=3, column=2, sticky=W)
+    listbox3.bind("<<ListboxSelect>>", listbox3_show_msg)
+
+    speaker_chosen = StringVar()
+    if setting_json["speaker"] == 'on':
+        speaker_chosen.set('当前：ON')
+    elif setting_json["speaker"] == 'off':
+        speaker_chosen.set('当前：OFF')
+    Label3_follow = Label(setting_area, textvariable=speaker_chosen, font=('思源黑体 CN Normal', 14))
+    Label3_follow.grid(row=3, column=3, sticky=W)
+
+    Label4 = Label(setting_area, text='回到昨日', font=('思源黑体 CN Normal', 14))
+    Label4.grid(row=4, column=1, sticky=W)
     back_to_ysd32png = PhotoImage(file=where_script+'/UI/backtoyes_32.png')
     button_back_to_ysd32 = Button(setting_area, image=back_to_ysd32png, relief=FLAT, cursor='hand2', command=back_to_ysd32_click)
-    button_back_to_ysd32.grid(row=3, column=2, sticky=W)
+    button_back_to_ysd32.grid(row=4, column=2, sticky=W)
 
     setting_area.pack(side=TOP, expand=NO, fill=Y)
 
@@ -355,7 +401,7 @@ def button_offline_click():
         return chose_sentence
 
     def button_next_click():
-        import Modules.backup
+        backup.backup()
         f = open(where_script+'/data/setting.json', 'r')
         setting_json = json.load(f)
         f.close()
@@ -385,8 +431,11 @@ def button_offline_click():
             setting_json = json.load(f)
             f.close()
 
-            if not os.path.exists(where_script+'/output/' + nowmonth + '月.txt'):
-                f = codecs.open(where_script+'/output/' + nowmonth + '月.txt', 'wb', 'utf-8')
+            if not os.path.exists(where_script + '/output/%(year)s' % {'year': nowyear}):
+                os.makedirs(where_script + '/output/%(year)s' % {'year': nowyear})
+            if not os.path.exists(where_script + '/output/%(year)s/%(month)s月.txt' % {'year': nowyear, 'month': nowmonth}):
+                f = codecs.open(where_script + '/output/%(year)s/%(month)s月.txt' % {'year': nowyear, 'month': nowmonth}
+                                , 'wb', 'utf-8')
                 f.close()
             # 判断当月文件是否存在，不存在则创建
 
@@ -396,19 +445,19 @@ def button_offline_click():
                 sentence_output = f.read()
                 f.close()
 
-                output = codecs.open(where_script+'/output/' + nowmonth + '月.txt', 'ab', 'utf-8')
+                output = codecs.open(where_script + '/output/%(year)s/%(month)s月.txt' % {'year': nowyear, 'month': nowmonth}, 'ab', 'utf-8')
                 output.write(nowyear + '年' + nowmonth + '月' + nowday + '日' + '\r\n')
                 output.write(sentence_output + '\r\n')
                 output.write('\r\n')
                 output.close()
 
-                allhistory = codecs.open(where_script+'/data/allhistory.txt', 'ab', 'utf-8')
+                allhistory = codecs.open(where_script + '/data/allhistory.txt', 'ab', 'utf-8')
                 allhistory.write(sentence_output + '\r\n')
                 allhistory.close()
 
-                cache_former = codecs.open(where_script+'/cache/sentence.txt', 'r', 'utf-8')
+                cache_former = codecs.open(where_script + '/cache/sentence.txt', 'r', 'utf-8')
 
-                allhistoryfile = codecs.open(where_script+'/data/allhistory.txt', 'r', 'utf-8')
+                allhistoryfile = codecs.open(where_script + '/data/allhistory.txt', 'r', 'utf-8')
                 allhistory = []
                 for line in allhistoryfile:
                     line = line.replace('\n','')
@@ -420,7 +469,7 @@ def button_offline_click():
 
                 cache = []
 
-                for line in cache_former :
+                for line in cache_former:
                     line = line.replace('\r', '')
                     line = line.replace('\n', '')
                     line = line.replace('\r\n', '')
@@ -429,7 +478,6 @@ def button_offline_click():
                     if line not in allhistory:
                         if (line + '\r\n') not in cache:
                             cache.append(line + '\r\n')
-
 
                 cache_file = codecs.open(where_script+'/cache/sentence.txt', 'wb', 'utf-8')
                 for line in cache:
@@ -458,7 +506,7 @@ def button_offline_click():
 
                 guidance_output = guidance_str
 
-                output = codecs.open(where_script+'/output/' + nowmonth + '月.txt', 'ab', 'utf-8')
+                output = codecs.open(where_script + '/output/%(year)s/%(month)s月.txt' % {'year': nowyear, 'month': nowmonth}, 'ab', 'utf-8')
                 output.write(nowyear + '年' + nowmonth + '月' + nowday + '日' + '\r\n')
                 output.write(sentence_output + '\r\n')
                 output.write('（' + guidance_output + '）\r\n')
@@ -662,15 +710,28 @@ def button_offline_click():
 
             zuowennotebar.pack(side=TOP, expand=YES, fill=Y)
 
-        '''
-        def final_speaker():
-            if book_str == '':
-                speaker(writer_str + '曾经说过：' + sentence_str)
+        # 朗读功能
+        f = open(where_script + '/data/setting.json', 'r')
+        setting_json = json.load(f)
+        f.close()
+        if setting_json["speaker"] == 'on':
+            if writer_str == '':
+                speak_sentence = '在' + book_str + '中曾经有过：' + sentence_str
+            elif writer_str != '':
+                if book_str == '':
+                    speak_sentence = writer_str + '曾经说过：' + sentence_str
+                else:
+                    speak_sentence = writer_str + '在' + book_str + '中曾经有过：' + sentence_str
             else:
-                speaker(writer_str + '在' + book_str + '中曾经有过：' + sentence_str)
-            return
+                speak_sentence = sentence_str
+            threads = []
+            t1 = threading.Thread(target=spvoice.speak, args=(speak_sentence,))
+            threads.append(t1)
+            if __name__ == '__main__':
+                for t in threads:
+                    t.setDaemon(True)
+                    t.start()
 
-        '''
         final_window.mainloop()
         offline_window.withdraw()
         return
@@ -742,11 +803,11 @@ def button_offline_click():
 # 按钮 发布句子 被单击
 def button_write_click():
     try:
-        import Modules.get
+        get.get()
     except:
         tkinter.messagebox.showerror('获取模组', '出……出错啦 TAT\n请检查配置/网络再试一次？\n(ㅅ´ ˘ `)♡~')
         # 此处可能有一bug：即使无网络仍然显示发布句子窗口——也许编译运行时不会出现？待查。2017/7/18
-    # 进行抓取操作，执行/Modules/get.py
+    # 进行抓取操作，执行/Mypackage/get.py
 
     def button_back_click():
         write_window.destroy()
@@ -762,8 +823,8 @@ def button_write_click():
 
     # 按钮 下一步 被单击
     def button_next_click():
-        import Modules.backup
-        # 执行/Modules/backup.py ，进行备份操作
+        backup.backup()
+        # 执行/Mypackage/backup.py ，进行备份操作
         f = open(where_script+'/data/setting.json', 'r')
         setting_json = json.load(f)
         f.close()
@@ -795,18 +856,20 @@ def button_write_click():
             setting_json = json.load(f)
             f.close()
 
-            if not os.path.exists(where_script+'/output/' + nowmonth + '月.txt'):
-                f = codecs.open(where_script+'/output/' + nowmonth + '月.txt', 'wb', 'utf-8')
+            if not os.path.exists(where_script + '/output/%(year)s' % {'year': nowyear}):
+                os.makedirs(where_script + '/output/%(year)s' % {'year': nowyear})
+            if not os.path.exists(where_script + '/output/%(year)s/%(month)s月.txt' % {'year': nowyear, 'month': nowmonth}):
+                f = codecs.open(where_script + '/output/%(year)s/%(month)s月.txt' % {'year': nowyear, 'month': nowmonth}, 'wb', 'utf-8')
                 f.close()
             # 判断当月文件是否存在，不存在则创建
 
             if setting_json["mode"] == 'juzimi':
 
-                f = codecs.open(where_script+'/data/today.txt', 'r', 'utf-8')
+                f = codecs.open(where_script + '/data/today.txt', 'r', 'utf-8')
                 sentence_output = f.read()
                 f.close()
 
-                output = codecs.open(where_script+'/output/' + nowmonth + '月.txt', 'ab', 'utf-8')
+                output = codecs.open(where_script + '/output/%(year)s/%(month)s月.txt' % {'year': nowyear, 'month': nowmonth}, 'ab', 'utf-8')
                 output.write(nowyear + '年' + nowmonth + '月' + nowday + '日' + '\r\n')
                 output.write(sentence_output + '\r\n')
                 output.write('\r\n')
@@ -879,7 +942,7 @@ def button_write_click():
 
                 guidance_output = guidance_str
 
-                output = codecs.open(where_script+'/output/' + nowmonth + '月.txt', 'ab', 'utf-8')
+                output = codecs.open(where_script + '/output/%(year)s/%(month)s月.txt' % {'year': nowyear, 'month': nowmonth}, 'ab', 'utf-8')
                 output.write(nowyear + '年' + nowmonth + '月' + nowday + '日' + '\r\n')
                 output.write(sentence_output + '\r\n')
                 output.write('（' + guidance_output + '）\r\n')
@@ -1082,15 +1145,28 @@ def button_write_click():
 
             zuowennotebar.pack(side=TOP, expand=YES, fill=Y)
 
-        '''
-        def final_speaker():
-            if book_str == '':
-                speaker(writer_str + '曾经说过：' + sentence_str)
+        # 朗读功能
+        f = open(where_script + '/data/setting.json', 'r')
+        setting_json = json.load(f)
+        f.close()
+        if setting_json["speaker"] == 'on':
+            if writer_str == '':
+                speak_sentence = '在' + book_str + '中曾经有过：' + sentence_str
+            elif writer_str != '':
+                if book_str == '':
+                    speak_sentence = writer_str + '曾经说过：' + sentence_str
+                else:
+                    speak_sentence = writer_str + '在' + book_str + '中曾经有过：' + sentence_str
             else:
-                speaker(writer_str + '在' + book_str + '中曾经有过：' + sentence_str)
-            return
+                speak_sentence = sentence_str
+            threads = []
+            t1 = threading.Thread(target=spvoice.speak, args=(speak_sentence,))
+            threads.append(t1)
+            if __name__ == '__main__':
+                for t in threads:
+                    t.setDaemon(True)
+                    t.start()
 
-        '''
         final_window.mainloop()
         write_window.withdraw()
         return
@@ -1201,23 +1277,21 @@ button_write.grid(row=0, column=6, sticky="nsew")
 
 
 # 六个标签
-label_opendir = Label(buttons, text='输出目录', font=('思源黑体 CN Normal',12), justify='center',anchor='center')
+label_opendir = Label(buttons, text='输出目录', font=('思源黑体 CN Normal', 12), justify='center', anchor='center')
 label_opendir.grid(row=1, column=1)
-label_about = Label(buttons, text='关于', font=('思源黑体 CN Normal',12), justify='center',anchor='center')
+label_about = Label(buttons, text='关于', font=('思源黑体 CN Normal', 12), justify='center', anchor='center')
 label_about.grid(row=1, column=2)
-label_setting = Label(buttons, text='设置', font=('思源黑体 CN Normal',12), justify='center',anchor='center')
+label_setting = Label(buttons, text='设置', font=('思源黑体 CN Normal', 12), justify='center', anchor='center')
 label_setting.grid(row=1, column=3)
-label_mail = Label(buttons, text='发送邮件', font=('思源黑体 CN Normal',12), justify='center',anchor='center')
+label_mail = Label(buttons, text='发送邮件', font=('思源黑体 CN Normal', 12), justify='center', anchor='center')
 label_mail.grid(row=1, column=4)
-label_offline = Label(buttons, text='离线模式', font=('思源黑体 CN Normal',12), justify='center',anchor='center')
+label_offline = Label(buttons, text='离线模式', font=('思源黑体 CN Normal', 12), justify='center' ,anchor='center')
 label_offline.grid(row=1, column=5)
-label_write = Label(buttons, text='发布句子', font=('思源黑体 CN Normal',12), justify='center',anchor='center')
+label_write = Label(buttons, text='发布句子', font=('思源黑体 CN Normal', 12), justify='center', anchor='center')
 label_write.grid(row=1, column=6)
 buttons.pack(side=TOP, expand=YES, fill=Y)
 
-f = open(where_script+'/data/setting.json', 'r')
-setting_json = json.load(f)
-f.close()
+
 if setting_json["once"] == "on":
     f = open(where_script+'/data/uselog', 'r')
     uselog = f.read()
@@ -1226,18 +1300,55 @@ if setting_json["once"] == "on":
         button_offline['state'] = DISABLED
         button_write['state'] = DISABLED
         label2['text'] = '今日已运行过！'
-
     else:
         pass
 # 每日一次模式。
 
 bottom = Frame(root, width=640, height=50, cursor='heart')
-label3 = Label(bottom,text='程序设计与制作：F.B.  2017-7 V1.0'
-               , font=('思源黑体 CN Normal',10),justify='center',anchor='center')
+label3 = Label(bottom,text='F.B. Made With ♥  2017-8  V' + setting_json['version']
+               , font=('思源黑体 CN Normal', 10),justify='center',anchor='center')
 label3.pack(side=TOP, expand=NO, fill=Y)
-label4 = Label(bottom,text='基于 Python3 与 tkinter ，于Github开源。内容取自“句子迷”，不代表程序编写者的立场。'
-               , font=('思源黑体 CN Normal',8), justify='center', anchor='center')
+label4 = Label(bottom,text='Powered by Python3 & Tkinter. 内容取自互联网，不代表程序编写者的立场。'
+               , font=('思源黑体 CN Normal', 8), justify='center', anchor='center')
 label4.pack(side=TOP, expand=YES, fill=Y)
 bottom.pack(side=BOTTOM, expand=YES, fill=Y)
+
+try:
+    latest_version = check_update()
+    if setting_json['version'] != latest_version:
+        nv = setting_json['version'].split('.')  # nv:now_version
+        lv = latest_version.split('.')  # lv:latest_version
+        nvX = int(nv[0])  # nvX:now_version's MAJOR version
+        nvY = int(nv[1])  # nvY:now_version's MINOR version
+        nvZ = int(nv[2])  # nvZ:now_version's PATCH version
+        lvX = int(lv[0])
+        lvY = int(lv[1])
+        lvZ = int(lv[2])
+        # print(nvX,nvY,nvZ)
+        # print(lvX,lvY,lvZ)
+        def update_messagebox():
+            if tkinter.messagebox.askyesno("版本更新",
+                                           "当前版本是%(nowversion)s\n最新版本是%(newversion)s\n要不要更新一下试试呢？"
+                                                   % {'nowversion': setting_json['version'],
+                                                      'newversion': latest_version}) is True:
+                webbrowser.open('https://github.com/Foldblade/EORS/releases')
+            return
+        if nvX <= lvX:
+            if nvX == lvX:
+                if nvY > lvY:
+                    pass
+                elif nvY == lvY:
+                    if nvZ >= lvZ:
+                        pass
+                    else:
+                        update_messagebox()
+                else:
+                    update_messagebox()
+            else:
+                update_messagebox()
+# 总觉得这检查更新的写法好不简洁……啊啊啊啊啊啊orz
+except:
+    pass
+
 
 root.mainloop()

@@ -1,0 +1,3 @@
+/output/*
+/Mypackage/mailsetting.json
+*/__pycache__/*
