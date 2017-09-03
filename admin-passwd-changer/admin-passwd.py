@@ -35,12 +35,17 @@ passwd = input('请输入管理密码：')
 str = passwd.encode('utf-8')
 sha = hashlib.sha256(str)
 encrypts = sha.hexdigest()
-f = codecs.open('password', 'w', 'utf-8')
+f = codecs.open(where_script + '/password', 'w', 'utf-8')
 f.write(encrypts)
 f.close()
 
-print('密码文件已经生成。')
-print('配置中……')
+if os.path.exists(where_script + '/password'):
+    print('密码文件已经生成。')
+    print('配置中……')
+else:
+    print('配置错误。请在Github向我发送ISSUE，或尝试以管理员身份再次运行此程序。')
+    time.sleep(3)
+    sys.exit(1)
 
 if not os.path.exists(where_rootmenu + '/safety'):
     os.mkdir(where_rootmenu + '/safety')
