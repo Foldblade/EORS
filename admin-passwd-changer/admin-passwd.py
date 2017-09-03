@@ -42,7 +42,7 @@ f.close()
 print('密码文件已经生成。')
 print('配置中……')
 
-if not os.path.exists(where_rootmenu + '/safety/password'):
+if not os.path.exists(where_rootmenu + '/safety'):
     os.mkdir(where_rootmenu + '/safety')
 
 shutil.copyfile(where_script + '/password', where_rootmenu + '/safety/password')
