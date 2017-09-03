@@ -66,8 +66,8 @@ def check_update():
             pass
         r = r.text
         webdata = BeautifulSoup(r, 'html.parser')
-        find_h1 = webdata.find_all('h1')
-        latest_version = str(find_h1[1].get_text())
+        find_v = webdata.find_all(class_='css-truncate-target')
+        latest_version = str(find_v[0].get_text())
         latest_version = latest_version.replace('\r', '')
         latest_version = latest_version.replace('\n', '')
         latest_version = latest_version[1:]

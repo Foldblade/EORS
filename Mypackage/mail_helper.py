@@ -32,7 +32,7 @@ if chosen == 'N':
     time.sleep(2)
     sys.exit(0)
 else:
-    f = open(where_script + '/mailsetting.json', 'r')
+    f = open(where_script + '/mailsetting(origin).json', 'r')
     mailjson = json.load(f)
     f.close()
     pass
@@ -50,8 +50,8 @@ print('第三项配置：SMTP账户')
 smtp_user = input('输入您的SMTP账户（发件邮箱）：')
 mailjson["smtp_user"] = smtp_user
 
-print('第四项配置：SMTP账户密码')
-smtp_passwd = input('输入您的SMTP账户（发件邮箱）密码：')
+print('第四项配置：SMTP账户密码/授权码')
+smtp_passwd = input('输入您的SMTP账户（发件邮箱）密码/授权码：')
 mailjson["smtp_passwd"] = smtp_passwd
 
 print('第五项配置：发件人')
