@@ -2,6 +2,7 @@
 
 from tkinter import *
 import tkinter.messagebox
+from tkinter.scrolledtext import ScrolledText
 #from tkinter.ttk import * # 这行去掉注释会引入windows最新的特性，不过下面的程序涉及relief就会报错
 import os
 import sys
@@ -680,13 +681,10 @@ def button_offline_click():
 
         if setting_json["mode"] == 'juzimi':
             juzimibar = Frame(final_window, width=756)
-            scroll = Scrollbar(juzimibar)
-            scroll.pack(side=RIGHT, anchor=W, fill=Y)
-            sentence_text = Text(juzimibar, relief=FLAT, font=('思源宋体 CN Heavy', 28), width=35, bd=0,
-                                 bg='#f0f0f0', yscrollcommand=scroll.set)
+            sentence_text = ScrolledText(juzimibar, relief=FLAT, font=('思源宋体 CN Heavy', 28), width=35, bd=0,
+                                 bg='#f0f0f0')
             sentence_text.insert(END, sentence_str)
             sentence_text.pack(side=LEFT, expand=NO, fill=NONE, anchor=CENTER)
-            scroll.config(command=sentence_text.yview)
             juzimibar.pack(side=TOP, expand=NO, fill=NONE)
 
 
@@ -695,17 +693,18 @@ def button_offline_click():
             zuowennotebar = Frame(final_window)
 
             zuowennote_sentencebar = Frame(zuowennotebar)
-            sentence_text = Text(zuowennote_sentencebar, relief=FLAT, font=('思源宋体 CN Heavy', 24), height=3,
-                                 width=40, bd=0, bg='#f0f0f0')
+            sentence_text = Text(zuowennote_sentencebar, relief=FLAT, font=('思源宋体 CN Heavy', 28), height=3,
+                                 width=38, bd=0, bg='#f0f0f0')
             sentence_text.insert(END, sentence_str)
-            sentence_text.pack(side=LEFT, expand=YES, fill=Y, anchor=CENTER)
+            sentence_text.pack(side=TOP, expand=YES, fill=X, anchor=CENTER, padx=20)
             zuowennote_sentencebar.grid(row=1, column=1, sticky=W)
 
             zuowennote_guidebar = Frame(zuowennotebar)
-            guidance_text = Text(zuowennote_guidebar, relief=FLAT, font=('思源黑体 CN Normal', 14),
-                                 width=79, bd=0, bg='#f0f0f0')
+            guidance_text = ScrolledText(zuowennote_guidebar, relief=FLAT, font=('思源黑体 CN Normal', 16), #height=6,
+                                 width=70, bd=0, bg='#f0f0f0')
             guidance_text.insert(END, guidance_str)
-            guidance_text.pack(side=LEFT, expand=YES, fill=Y, anchor=CENTER)
+            guidance_text.pack(side=TOP, expand=YES, fill=Y, anchor=CENTER, padx=20)
+
             zuowennote_guidebar.grid(row=2, column=1, sticky=W)
 
             zuowennotebar.pack(side=TOP, expand=YES, fill=Y)
@@ -725,7 +724,7 @@ def button_offline_click():
             else:
                 speak_sentence = sentence_str
             threads = []
-            t1 = threading.Thread(target=spvoice.speak, args=(speak_sentence,))
+            t1 = threading.Thread(target=spvoice.say, args=(speak_sentence,))
             threads.append(t1)
             if __name__ == '__main__':
                 for t in threads:
@@ -753,7 +752,7 @@ def button_offline_click():
     yscroll.pack(side=RIGHT, anchor=CENTER, fill=Y)
     xscroll = Scrollbar(chosearea, orient=HORIZONTAL)
     xscroll.pack(side=BOTTOM, anchor=CENTER, fill=X)
-    chose_listbox = Listbox(chosearea, font=('思源黑体 CN Normal', 12),width=50 , bg='#f0f0f0', bd=0,
+    chose_listbox = Listbox(chosearea, font=('思源黑体 CN Regular', 12),width=50 , bg='#f0f0f0', bd=0,
                             yscrollcommand=yscroll.set, xscrollcommand=xscroll.set)
 
     f = open(where_script+'/data/setting.json', 'r')
@@ -1115,13 +1114,10 @@ def button_write_click():
 
         if setting_json["mode"] == 'juzimi':
             juzimibar = Frame(final_window, width=756)
-            scroll = Scrollbar(juzimibar)
-            scroll.pack(side=RIGHT, anchor=W, fill=Y)
-            sentence_text = Text(juzimibar, relief=FLAT, font=('思源宋体 CN Heavy', 28), width=35, bd=0,
-                                 bg='#f0f0f0', yscrollcommand=scroll.set)
+            sentence_text = ScrolledText(juzimibar, relief=FLAT, font=('思源宋体 CN Heavy', 28), width=35, bd=0,
+                                 bg='#f0f0f0')
             sentence_text.insert(END, sentence_str)
             sentence_text.pack(side=LEFT, expand=NO, fill=NONE, anchor=CENTER)
-            scroll.config(command=sentence_text.yview)
             juzimibar.pack(side=TOP, expand=NO, fill=NONE)
 
 
@@ -1130,17 +1126,18 @@ def button_write_click():
             zuowennotebar = Frame(final_window)
 
             zuowennote_sentencebar = Frame(zuowennotebar)
-            sentence_text = Text(zuowennote_sentencebar, relief=FLAT, font=('思源宋体 CN Heavy', 24), height=3,
-                                 width=40, bd=0, bg='#f0f0f0')
+            sentence_text = Text(zuowennote_sentencebar, relief=FLAT, font=('思源宋体 CN Heavy', 28), height=3,
+                                 width=38, bd=0, bg='#f0f0f0')
             sentence_text.insert(END, sentence_str)
-            sentence_text.pack(side=LEFT, expand=YES, fill=Y, anchor=CENTER)
+            sentence_text.pack(side=TOP, expand=YES, fill=X, anchor=CENTER, padx=20)
             zuowennote_sentencebar.grid(row=1, column=1, sticky=W)
 
             zuowennote_guidebar = Frame(zuowennotebar)
-            guidance_text = Text(zuowennote_guidebar, relief=FLAT, font=('思源黑体 CN Normal', 14),
-                                 width=79, bd=0, bg='#f0f0f0')
+            guidance_text = ScrolledText(zuowennote_guidebar, relief=FLAT, font=('思源黑体 CN Normal', 16),  # height=6,
+                                         width=70, bd=0, bg='#f0f0f0')
             guidance_text.insert(END, guidance_str)
-            guidance_text.pack(side=LEFT, expand=YES, fill=Y, anchor=CENTER)
+            guidance_text.pack(side=TOP, expand=YES, fill=Y, anchor=CENTER, padx=20)
+
             zuowennote_guidebar.grid(row=2, column=1, sticky=W)
 
             zuowennotebar.pack(side=TOP, expand=YES, fill=Y)
@@ -1160,7 +1157,7 @@ def button_write_click():
             else:
                 speak_sentence = sentence_str
             threads = []
-            t1 = threading.Thread(target=spvoice.speak, args=(speak_sentence,))
+            t1 = threading.Thread(target=spvoice.say, args=(speak_sentence,))
             threads.append(t1)
             if __name__ == '__main__':
                 for t in threads:
@@ -1190,7 +1187,7 @@ def button_write_click():
     yscroll.pack(side=RIGHT, anchor=CENTER, fill=Y)
     xscroll = Scrollbar(chosearea, orient=HORIZONTAL)
     xscroll.pack(side=BOTTOM, anchor=CENTER, fill=X)
-    chose_listbox = Listbox(chosearea, font=('思源黑体 CN Normal', 12), width=50, bg='#f0f0f0', bd=0,
+    chose_listbox = Listbox(chosearea, font=('思源黑体 CN Regular', 12), width=50, bg='#f0f0f0', bd=0,
                             yscrollcommand=yscroll.set, xscrollcommand=xscroll.set)
 
     f = open(where_script+'/data/setting.json', 'r')
@@ -1277,17 +1274,17 @@ button_write.grid(row=0, column=6, sticky="nsew")
 
 
 # 六个标签
-label_opendir = Label(buttons, text='输出目录', font=('思源黑体 CN Normal', 12), justify='center', anchor='center')
+label_opendir = Label(buttons, text='输出目录', font=('思源黑体 CN Regular', 12), justify='center', anchor='center')
 label_opendir.grid(row=1, column=1)
-label_about = Label(buttons, text='关于', font=('思源黑体 CN Normal', 12), justify='center', anchor='center')
+label_about = Label(buttons, text='关于', font=('思源黑体 CN Regular', 12), justify='center', anchor='center')
 label_about.grid(row=1, column=2)
-label_setting = Label(buttons, text='设置', font=('思源黑体 CN Normal', 12), justify='center', anchor='center')
+label_setting = Label(buttons, text='设置', font=('思源黑体 CN Regular', 12), justify='center', anchor='center')
 label_setting.grid(row=1, column=3)
-label_mail = Label(buttons, text='发送邮件', font=('思源黑体 CN Normal', 12), justify='center', anchor='center')
+label_mail = Label(buttons, text='发送邮件', font=('思源黑体 CN Regular', 12), justify='center', anchor='center')
 label_mail.grid(row=1, column=4)
-label_offline = Label(buttons, text='离线模式', font=('思源黑体 CN Normal', 12), justify='center' ,anchor='center')
+label_offline = Label(buttons, text='离线模式', font=('思源黑体 CN Regular', 12), justify='center' ,anchor='center')
 label_offline.grid(row=1, column=5)
-label_write = Label(buttons, text='发布句子', font=('思源黑体 CN Normal', 12), justify='center', anchor='center')
+label_write = Label(buttons, text='发布句子', font=('思源黑体 CN Regular', 12), justify='center', anchor='center')
 label_write.grid(row=1, column=6)
 buttons.pack(side=TOP, expand=YES, fill=Y)
 
@@ -1306,10 +1303,10 @@ if setting_json["once"] == "on":
 
 bottom = Frame(root, width=640, height=50, cursor='heart')
 label3 = Label(bottom,text='F.B. Made With ♥  2017-8  V' + setting_json['version']
-               , font=('思源黑体 CN Normal', 10),justify='center',anchor='center')
+               , font=('思源黑体 CN Light', 10),justify='center',anchor='center')
 label3.pack(side=TOP, expand=NO, fill=Y)
 label4 = Label(bottom,text='Powered by Python3 & Tkinter. 内容取自互联网，不代表程序编写者的立场。'
-               , font=('思源黑体 CN Normal', 8), justify='center', anchor='center')
+               , font=('思源黑体 CN Light', 8), justify='center', anchor='center')
 label4.pack(side=TOP, expand=YES, fill=Y)
 bottom.pack(side=BOTTOM, expand=YES, fill=Y)
 

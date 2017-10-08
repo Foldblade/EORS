@@ -15,21 +15,26 @@ def backup():
     where_script = os.path.split(os.path.realpath(__file__))[0]
     # print(where_script)
     where_rootmenu = where_script[:where_script.rfind('\\')]
-
     # print(where_rootmenu)
 
     def zipit(sourceFilePath, zipFilePath, zipfileName):
-        sourceFiles = os.listdir(sourceFilePath)
-        if sourceFiles == None or len(sourceFiles) < 1:
-            print(">>>>>> 待压缩的文件目录：" + sourceFilePath + " 里面不存在文件,无需压缩. <<<<<<")
-        else:
-            zipFileFullDir = os.path.join(zipFilePath, zipfileName)
-            z = zipfile.ZipFile(zipFileFullDir, 'w', zipfile.ZIP_DEFLATED)
-            for sourceFile in sourceFiles:
-                sourceFileFullDir = os.path.join(sourceFilePath, sourceFile)
-                # sourceFileFullDir是文件的全路径，sourceFile是文件名，这样就能达到你要的目的了
-                z.write(sourceFileFullDir, sourceFile)
-            z.close()
+        z = zipfile.ZipFile(os.path.join(zipFilePath, zipfileName), 'w', zipfile.ZIP_DEFLATED)
+        startdir = sourceFilePath
+        for dirpath, dirnames, filenames in os.walk(startdir):
+            # print('Dirpath:', dirpath)
+            # print('Dirnames:', dirnames)
+            # print('Filenames:', filenames)
+            for filename in filenames:
+                print('FILENAME：',filename)
+                sourceFileFullDir = os.path.join(dirpath, filename)
+                # sourceFileFullDir是文件的全路径
+                sourceFileFullDir_inZIP = sourceFileFullDir.replace(startdir,'')
+                # print(sourceFileFullDir_inZIP)
+                z.write(sourceFileFullDir, sourceFileFullDir_inZIP)
+                # 第一个参数：源文件全路径；第二个参数：ZIP中该文件路径。
+                # 思路：源文件全路径 - 被打包文件夹的路径 = ZIP中该文件路径
+                # 大概呢也就我才能这么有病的搞个这种文件目录吧，文件夹里套文件夹，还有几个散兵游勇。
+        z.close()
         return
 
     zipit(where_rootmenu + '/cache', where_rootmenu + '/backup', 'cache.zip')

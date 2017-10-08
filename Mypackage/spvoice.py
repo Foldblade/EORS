@@ -9,10 +9,10 @@ f = open(where_script + '/spvoicesetting.json', 'r')
 voicejson = json.load(f)
 f.close()
 
-def speak(content):
+def say(content):
     spk = win32com.client.Dispatch("SAPI.SpVoice")
-    spk.volume = int(voicejson["volume"])  # 音量，范围0~100
-    spk.rate = int(voicejson["rate"])     # 语速，范围-10~10
+    spk.Volume = int(voicejson["volume"])  # 音量，范围0~100
+    spk.Rate = int(voicejson["rate"])     # 语速，范围-10~10
     spk.Speak(content)
     return
 
