@@ -402,7 +402,7 @@ def button_setting_click():
         countdown_chosen.set('当前：ON')
     elif setting_json["countdown"] == 'off':
         countdown_chosen.set('当前：OFF')
-    Label_countdown_follow = Label(setting_area, textvariable=speech_chosen, font=('思源黑体 CN Light', 12))
+    Label_countdown_follow = Label(setting_area, textvariable=countdown_chosen, font=('思源黑体 CN Light', 12))
     Label_countdown_follow.grid(row=2, column=6, sticky=W)
 
     Label_back_to = Label(setting_area, text='回到昨日', font=('思源黑体 CN Regular', 14))
