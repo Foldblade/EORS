@@ -1,3 +1,4 @@
 /output/*
 /Mypackage/mailsetting.json
-*/__pycache__/*
+/admin-passwd-changer/password
+__pycache__/*

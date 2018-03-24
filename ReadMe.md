@@ -29,11 +29,42 @@ F.B. 2017-7
 * 防止有人手贱，支持开启每日仅运行一次的模式，还可自动备份、“回到昨日”
 
 ## 更新日志
+
+### V1.3.0
+* 新增：
+    * 高考倒计时  
+    你可以在设置中开启本功能。对应`/data/setting.json`中的`"countdown"`，可取值`"on"`、`"off"`
+* 修复在尚未有历史记录时无法到达当年输出目录（如`/output/2018`）的错误，现在会打开根输出目录`/output`。
+* 修改：
+    * 对部分变量名的修改
+    * **测试功能**：对[作文纸条](https://itunes.apple.com/cn/app/%E4%BD%9C%E6%96%87%E7%BA%B8%E6%9D%A1/id1207254643) 4.X版本的适配尝试。程序默认使用其2.X~3.X的版本，如需尝试4.X版本，请在`/data/setting.json`中手动修改。同时，对[作文纸条](https://itunes.apple.com/cn/app/%E4%BD%9C%E6%96%87%E7%BA%B8%E6%9D%A1/id1207254643)的User Agents配置移到`setting.json`。  
+      **可能有bug。**我能看到客户端GET方式的请求头里有一个salt，如果说要加入验证的话，那我现在写的这个方法**可能会死**（当然2.X~3.X也不会好到哪去）。  
+      setting.json新增配置说明：
+        * "zn_mode_chosen"：可取值："4.0"、"2.0"（默认），分别对应4.X版本、2.X~3.X版本。
+        * "zn_useragent2.0"：2.X~3.X版本User Agents
+        * "zn_useragent4.0"：4.X版本User Agents
+        * 请务必注意以下示例中的空格
+```json
+{
+    "zn_useragent2.0": [
+        "CompositionNote/3.1.1 (iPod touch;iOS 11.2.5; Scale/2.00)",
+        "CompositionNote/3.1.1 (iPhone;iOS 11.2.5; Scale/2.00)",
+        "CompositionNote/3.0 (iPhone;iOS 10.3.1; Scale/2.00)"
+    ],
+	"zn_useragent4.0": [
+        "CompositionNote/4.0.2 (iPod touch;iOS 11.2.6; Scale/2.00)",
+        "CompositionNote/4.0.2 (iPhone;iOS 11.2.5; Scale/2.00)",
+        "CompositionNote/4.0.2 (iPhone;iOS 10.3.1; Scale/2.00)"
+    ],
+    "zn_mode_chosen": "2.0"
+}
+```
+
 ### V1.2.3
 * 修复：
     * V1.2.0中由于/output 目录下的文件层次的更改造成的“回到昨日”功能错误。
-	* 朗读模式小问题的修复
-* 预告：下一版可能会去考虑高分屏的适配……只怕是个大坑添不上呢……而且我好累。（因为我们换了交互平板，4K……近看模糊的要死）
+    * 朗读模式小问题的修复
+* ~~预告：下一版可能会去考虑高分屏的适配……只怕是个大坑添不上呢……而且我好累。（因为我们换了交互平板，4K……近看模糊的要死）~~
 
 ### V1.2.2
 * 优化：发布界面采用更大字号，并进行了UI微调。
@@ -41,14 +72,14 @@ F.B. 2017-7
 ### V1.2.1
 * 修复： 
     * mail_helper.py 和 邮件配置助手.exe ；admin-passwd.py 和 管理密码修改器.exe 因为V1.2.0写了 `.gitignore` 造成了一点影响。 
-	* 自动更新部分修正。
+    * 自动更新部分修正。
 
 ### V1.2.0
 * 新增：
     * 朗读模式   
-    现在已经可以朗读出发布的句子啦！您可以在设置界面中进行设置。
+      现在已经可以朗读出发布的句子啦！您可以在设置界面中进行设置。
     * 自动更新  
-    新增了自动检查release版本更新的功能。
+      新增了自动检查release版本更新的功能。
 * 更改：
     * /output 目录下的文件层次，X月.txt放在当前年份文件夹下，如： /output/2017/9月.txt。
     * /Modules 改名 /Mypackage，进行一点小修小补。

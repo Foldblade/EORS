@@ -3,7 +3,7 @@
 from tkinter import *
 import tkinter.messagebox
 from tkinter.scrolledtext import ScrolledText
-#from tkinter.ttk import * # 这行去掉注释会引入windows最新的特性，不过下面的程序涉及relief就会报错
+# from tkinter.ttk import * # 这行去掉注释会引入windows最新的特性，不过下面的程序涉及relief就会报错
 import os
 import sys
 import datetime
@@ -78,7 +78,11 @@ def check_update():
 
 # 按钮 输出目录 被单击
 def button_opendir_click():
-    os.startfile(where_script + '/output/' + nowyear )
+    try:
+        os.startfile(where_script + '/output/' + nowyear)
+    except:
+        os.startfile(where_script + '/output')
+
     return
 
 # 按钮 退出 被单击
@@ -113,7 +117,7 @@ def button_about_click():
     readmearea = Frame(about_window, width=600, height=250)
     scroll = Scrollbar(readmearea)
     scroll.pack(side=RIGHT, anchor=W, fill=Y)
-    readmetext = Text(readmearea, relief=FLAT, font=('思源黑体 CN Normal', 10), padx=10, pady=10, bd=0,
+    readmetext = Text(readmearea, relief=FLAT, font=('思源黑体 CN Regular', 10), padx=10, pady=10, bd=0,
                       bg='#f0f0f0', yscrollcommand=scroll.set)
     readmetext.pack(side=LEFT, expand=NO, fill=NONE, anchor=CENTER)
     readme = linecache.getlines('ReadMe.md')
@@ -148,26 +152,33 @@ def button_setting_click():
         root.update()
         return
 
-    def listbox1_show_msg(event):
-        global listbox1_newchosen
-        print(listbox1.get(listbox1.curselection()))
-        mode_chosen.set('当前：' + listbox1.get(listbox1.curselection()))
-        listbox1_newchosen = listbox1.get(listbox1.curselection())
-        return listbox1_newchosen
+    def listbox_mode_show_msg(event):
+        global listbox_mode_newchosen
+        print(listbox_mode.get(listbox_mode.curselection()))
+        mode_chosen.set('当前：' + listbox_mode.get(listbox_mode.curselection()))
+        listbox_mode_newchosen = listbox_mode.get(listbox_mode.curselection())
+        return listbox_mode_newchosen
 
-    def listbox2_show_msg(event):
-        global listbox2_newchosen
-        print(listbox2.get(listbox2.curselection()))
-        once_chosen.set('当前：' + listbox2.get(listbox2.curselection()))
-        listbox2_newchosen = listbox2.get(listbox2.curselection())
-        return listbox2_newchosen
+    def listbox_once_show_msg(event):
+        global listbox_once_newchosen
+        print(listbox_once.get(listbox_once.curselection()))
+        once_chosen.set('当前：' + listbox_once.get(listbox_once.curselection()))
+        listbox_once_newchosen = listbox_once.get(listbox_once.curselection())
+        return listbox_once_newchosen
 
-    def listbox3_show_msg(event):
-        global listbox3_newchosen
-        print(listbox3.get(listbox3.curselection()))
-        speaker_chosen.set('当前：' + listbox3.get(listbox3.curselection()))
-        listbox3_newchosen = listbox3.get(listbox3.curselection())
-        return listbox3_newchosen
+    def listbox_speech_show_msg(event):
+        global listbox_speech_newchosen
+        print(listbox_speech.get(listbox_speech.curselection()))
+        speech_chosen.set('当前：' + listbox_speech.get(listbox_speech.curselection()))
+        listbox_speech_newchosen = listbox_speech.get(listbox_speech.curselection())
+        return listbox_speech_newchosen
+
+    def listbox_countdown_show_msg(event):
+        global listbox_countdown_newchosen
+        print(listbox_countdown.get(listbox_countdown.curselection()))
+        countdown_chosen.set('当前：' + listbox_countdown.get(listbox_countdown.curselection()))
+        listbox_countdown_newchosen = listbox_countdown.get(listbox_countdown.curselection())
+        return listbox_countdown_newchosen
 
     def back_to_ysd32_click():
         def button_back2_click():
@@ -220,7 +231,7 @@ def button_setting_click():
         back_to_ysd_change.set('请输入管理员密码：')
         Label1 = Label(back_to_ysd_frame, text='确定回到昨日吗？', font=('思源黑体 CN Light', 16), justify='center', anchor='center')
         Label1.grid(row=1, column=2, sticky=W)
-        Label2 = Label(back_to_ysd_frame, textvariable=back_to_ysd_change, font=('思源黑体 CN Normal', 12), justify='center',anchor='center')
+        Label2 = Label(back_to_ysd_frame, textvariable=back_to_ysd_change, font=('思源黑体 CN Regular', 12), justify='center',anchor='center')
         Label2.grid(row=2, column=1, columnspan=2, sticky='nsew')
 
         passwd = StringVar()
@@ -245,49 +256,64 @@ def button_setting_click():
         f.close()
         try:
             try:
-                if listbox1_newchosen == '句子迷':
+                if listbox_mode_newchosen == '句子迷':
                     setting_json["mode"] = "juzimi"
                     f = open(where_script+'/data/setting.json', 'w')
                     json.dump(setting_json, f, indent=4, ensure_ascii=False)
                     f.close()
-                elif listbox1_newchosen == '作文纸条':
+                elif listbox_mode_newchosen == '作文纸条':
                     setting_json["mode"] = "zuowennote"
                     f = open(where_script+'/data/setting.json', 'w')
                     json.dump(setting_json, f, indent=4, ensure_ascii=False)
                     f.close()
                 savemessage.set('保存啦 QwQ')
             except:
-                pass
+                savemessage.set('出了点问题orz')
 
             try:
-                if listbox2_newchosen == 'ON':
+                if listbox_once_newchosen == 'ON':
                     setting_json["once"] = "on"
                     f = open(where_script+'/data/setting.json', 'w')
                     json.dump(setting_json, f, indent=4, ensure_ascii=False)
                     f.close()
-                elif listbox2_newchosen == 'OFF':
+                elif listbox_once_newchosen == 'OFF':
                     setting_json["once"] = "off"
                     f = open(where_script+'/data/setting.json', 'w')
                     json.dump(setting_json, f, indent=4, ensure_ascii=False)
                     f.close()
                 savemessage.set('保存啦 QwQ')
             except:
-                pass
+                savemessage.set('出了点问题orz')
 
             try:
-                if listbox3_newchosen == 'ON':
-                    setting_json["speaker"] = "on"
+                if listbox_speech_newchosen == 'ON':
+                    setting_json["speech"] = "on"
                     f = open(where_script+'/data/setting.json', 'w')
                     json.dump(setting_json, f, indent=4, ensure_ascii=False)
                     f.close()
-                elif listbox3_newchosen == 'OFF':
-                    setting_json["speaker"] = "off"
+                elif listbox_speech_newchosen == 'OFF':
+                    setting_json["speech"] = "off"
                     f = open(where_script+'/data/setting.json', 'w')
                     json.dump(setting_json, f, indent=4, ensure_ascii=False)
                     f.close()
                 savemessage.set('保存啦 QwQ')
             except:
-                pass
+                savemessage.set('出了点问题orz')
+
+            try:
+                if listbox_countdown_newchosen == 'ON':
+                    setting_json["countdown"] = "on"
+                    f = open(where_script+'/data/setting.json', 'w')
+                    json.dump(setting_json, f, indent=4, ensure_ascii=False)
+                    f.close()
+                elif listbox_countdown_newchosen == 'OFF':
+                    setting_json["countdown"] = "off"
+                    f = open(where_script+'/data/setting.json', 'w')
+                    json.dump(setting_json, f, indent=4, ensure_ascii=False)
+                    f.close()
+                savemessage.set('保存啦 QwQ')
+            except:
+                savemessage.set('出了点问题orz')
         except:
             savemessage.set('操作错误，未记录。')
 
@@ -305,75 +331,92 @@ def button_setting_click():
     backpng = PhotoImage(file=where_script+'/UI/back2.png')
     button_back = Button(topbar, image=backpng, relief=FLAT, cursor='hand2', command=button_back_click)
     button_back.grid(row=1, column=1, sticky=W)
-    label = Label(topbar, text='设置', font=('思源黑体 CN Light', 28), justify='center', anchor='center')
-    label.grid(row=1, column=2, sticky=W)
+    label_setting = Label(topbar, text='设置', font=('思源黑体 CN Light', 28), justify='center', anchor='center')
+    label_setting.grid(row=1, column=2, sticky=W)
     topbar.pack(side=TOP, expand=NO, fill=X)
 
     setting_area = Frame(setting_window,width=500, height=200)
     f = open(where_script+'/data/setting.json','r')
     setting_json = json.load(f)
     f.close()
-    Label1 = Label(setting_area, text='模式选择', font=('思源黑体 CN Normal', 14))
-    Label1.grid(row=1, column=1, sticky=W)
+    Label_mode = Label(setting_area, text='模式选择', font=('思源黑体 CN Regular', 14))
+    Label_mode.grid(row=1, column=1, sticky=W)
     selection = ['句子迷', '作文纸条']
     mode = StringVar(value=selection)
-    listbox1 = Listbox(setting_area, height=2, width=7, selectmode=BROWSE, listvariable=mode, bd=1, bg='#f0f0f0')
-    listbox1.grid(row=1, column=2, sticky=W)
-    listbox1.bind("<<ListboxSelect>>", listbox1_show_msg)
+    listbox_mode = Listbox(setting_area, height=2, width=7, selectmode=BROWSE, listvariable=mode, bd=1, bg='#f0f0f0')
+    listbox_mode.grid(row=1, column=2, sticky=W)
+    listbox_mode.bind("<<ListboxSelect>>", listbox_mode_show_msg)
 
     mode_chosen = StringVar()
     if setting_json["mode"] == 'juzimi':
         mode_chosen.set('当前：句子迷')
     elif setting_json["mode"] == 'zuowennote':
         mode_chosen.set('当前：作文纸条')
-    Label1_follow = Label(setting_area, textvariable=mode_chosen, font=('思源黑体 CN Normal', 14))
-    Label1_follow.grid(row=1, column=3, sticky=W)
+    Label_mode_follow = Label(setting_area, textvariable=mode_chosen, font=('思源黑体 CN Light', 12))
+    Label_mode_follow.grid(row=1, column=3, sticky=W)
 
-    Label2 = Label(setting_area, text='每日一次', font=('思源黑体 CN Normal', 14))
-    Label2.grid(row=2, column=1, sticky=W)
+    Label_once = Label(setting_area, text='每日一次', font=('思源黑体 CN Regular', 14))
+    Label_once.grid(row=1, column=4, sticky=W)
     selection = ['ON', 'OFF']
-    mode = StringVar(value=selection)
-    listbox2 = Listbox(setting_area, height=2, width=7, selectmode=BROWSE, listvariable=mode, bd=1, bg='#f0f0f0')
-    listbox2.grid(row=2, column=2, sticky=W)
-    listbox2.bind("<<ListboxSelect>>", listbox2_show_msg)
+    once = StringVar(value=selection)
+    listbox_once = Listbox(setting_area, height=2, width=7, selectmode=BROWSE, listvariable=once, bd=1, bg='#f0f0f0')
+    listbox_once.grid(row=1, column=5, sticky=W)
+    listbox_once.bind("<<ListboxSelect>>", listbox_once_show_msg)
 
     once_chosen = StringVar()
     if setting_json["once"] == 'on':
         once_chosen.set('当前：ON')
     elif setting_json["once"] == 'off':
         once_chosen.set('当前：OFF')
-    Label2_follow = Label(setting_area, textvariable=once_chosen, font=('思源黑体 CN Normal', 14))
-    Label2_follow.grid(row=2, column=3, sticky=W)
+    Label_once_follow = Label(setting_area, textvariable=once_chosen, font=('思源黑体 CN Light', 12))
+    Label_once_follow.grid(row=1, column=6, sticky=W)
 
-    Label3 = Label(setting_area, text='朗读句子', font=('思源黑体 CN Normal', 14))
-    Label3.grid(row=3, column=1, sticky=W)
+    Label_speech = Label(setting_area, text='朗读句子', font=('思源黑体 CN Regular', 14))
+    Label_speech.grid(row=2, column=1, sticky=W)
     selection = ['ON', 'OFF']
-    speaker = StringVar(value=selection)
-    listbox3 = Listbox(setting_area, height=2, width=7, selectmode=BROWSE, listvariable=speaker, bd=1, bg='#f0f0f0')
-    listbox3.grid(row=3, column=2, sticky=W)
-    listbox3.bind("<<ListboxSelect>>", listbox3_show_msg)
+    speech = StringVar(value=selection)
+    listbox_speech = Listbox(setting_area, height=2, width=7,
+                             selectmode=BROWSE, listvariable=speech, bd=1, bg='#f0f0f0')
+    listbox_speech.grid(row=2, column=2, sticky=W)
+    listbox_speech.bind("<<ListboxSelect>>", listbox_speech_show_msg)
 
-    speaker_chosen = StringVar()
-    if setting_json["speaker"] == 'on':
-        speaker_chosen.set('当前：ON')
-    elif setting_json["speaker"] == 'off':
-        speaker_chosen.set('当前：OFF')
-    Label3_follow = Label(setting_area, textvariable=speaker_chosen, font=('思源黑体 CN Normal', 14))
-    Label3_follow.grid(row=3, column=3, sticky=W)
+    speech_chosen = StringVar()
+    if setting_json["speech"] == 'on':
+        speech_chosen.set('当前：ON')
+    elif setting_json["speech"] == 'off':
+        speech_chosen.set('当前：OFF')
+    Label_speech_follow = Label(setting_area, textvariable=speech_chosen, font=('思源黑体 CN Light', 12))
+    Label_speech_follow.grid(row=2, column=3, sticky=W)
 
-    Label4 = Label(setting_area, text='回到昨日', font=('思源黑体 CN Normal', 14))
-    Label4.grid(row=4, column=1, sticky=W)
+    Label_countdown = Label(setting_area, text='高考计时', font=('思源黑体 CN Regular', 14))
+    Label_countdown.grid(row=2, column=4, sticky=W)
+    selection = ['ON', 'OFF']
+    countdown = StringVar(value=selection)
+    listbox_countdown = Listbox(setting_area, height=2, width=7,
+                             selectmode=BROWSE, listvariable=speech, bd=1, bg='#f0f0f0')
+    listbox_countdown.grid(row=2, column=5, sticky=W)
+    listbox_countdown.bind("<<ListboxSelect>>", listbox_countdown_show_msg)
+
+    countdown_chosen = StringVar()
+    if setting_json["speech"] == 'on':
+        countdown_chosen.set('当前：ON')
+    elif setting_json["speech"] == 'off':
+        countdown_chosen.set('当前：OFF')
+    Label_countdown_follow = Label(setting_area, textvariable=speech_chosen, font=('思源黑体 CN Light', 12))
+    Label_countdown_follow.grid(row=2, column=6, sticky=W)
+
+    Label_back_to = Label(setting_area, text='回到昨日', font=('思源黑体 CN Regular', 14))
+    Label_back_to.grid(row=3, column=3, sticky=W)
     back_to_ysd32png = PhotoImage(file=where_script+'/UI/backtoyes_32.png')
     button_back_to_ysd32 = Button(setting_area, image=back_to_ysd32png, relief=FLAT, cursor='hand2', command=back_to_ysd32_click)
-    button_back_to_ysd32.grid(row=4, column=2, sticky=W)
+    button_back_to_ysd32.grid(row=3, column=4, sticky=W)
 
     setting_area.pack(side=TOP, expand=NO, fill=Y)
-
 
     bottombar = Frame(setting_window, width=640, height=120)
     savemessage = StringVar()
     savemessage.set('记得保存更改哦↓')
-    labelsave = Label(bottombar, textvariable=savemessage, font=('思源黑体 CN Normal', 20))
+    labelsave = Label(bottombar, textvariable=savemessage, font=('思源黑体 CN Light', 20))
     labelsave.pack(side=TOP, expand=NO, fill=NONE, anchor=CENTER)
     savepng = PhotoImage(file=where_script+'/UI/save.png')
     button_save = Button(bottombar, image=savepng, relief=FLAT, cursor='hand2', command=button_save_click)
@@ -663,11 +706,11 @@ def button_offline_click():
         setting_json = json.load(f)
         f.close()
         if setting_json["mode"] == 'juzimi':
-            label_comefrom = Label(bottombar, text='内容来源：句子迷', font=('思源黑体 CN Normal', 8),
+            label_comefrom = Label(bottombar, text='内容来源：句子迷', font=('思源黑体 CN Regular', 8),
                                    justify=CENTER, anchor=CENTER)
             label_comefrom.pack(side=TOP, expand=NO, fill=NONE, anchor=CENTER)
         elif setting_json["mode"] == 'zuowennote':
-            label_comefrom = Label(bottombar, text='内容来源：作文纸条', font=('思源黑体 CN Normal', 8),
+            label_comefrom = Label(bottombar, text='内容来源：作文纸条', font=('思源黑体 CN Regular', 8),
                                    justify=CENTER, anchor=CENTER)
             label_comefrom.pack(side=TOP, expand=NO, fill=NONE, anchor=CENTER)
         else:
@@ -700,7 +743,7 @@ def button_offline_click():
             zuowennote_sentencebar.grid(row=1, column=1, sticky=W)
 
             zuowennote_guidebar = Frame(zuowennotebar)
-            guidance_text = ScrolledText(zuowennote_guidebar, relief=FLAT, font=('思源黑体 CN Normal', 16), #height=6,
+            guidance_text = ScrolledText(zuowennote_guidebar, relief=FLAT, font=('思源黑体 CN Regular', 16), #height=6,
                                  width=70, bd=0, bg='#f0f0f0')
             guidance_text.insert(END, guidance_str)
             guidance_text.pack(side=TOP, expand=YES, fill=Y, anchor=CENTER, padx=20)
@@ -713,7 +756,7 @@ def button_offline_click():
         f = open(where_script + '/data/setting.json', 'r')
         setting_json = json.load(f)
         f.close()
-        if setting_json["speaker"] == 'on':
+        if setting_json["speech"] == 'on':
             if writer_str == '':
                 speak_sentence = '在' + book_str + '中曾经有过：' + sentence_str
             elif writer_str != '':
@@ -778,7 +821,15 @@ def button_offline_click():
                 # print(sentencejson)
                 zuowennote_sentence = sentencejson["title"]
                 zuowennote_writer = sentencejson["author"]
-                chose_listbox.insert(END, zuowennote_sentence + '——' + zuowennote_writer)
+                if sentencejson["content"] == '':
+                    pass
+                elif zuowennote_writer.find('纸条') != -1 or zuowennote_writer.find('迢遥旧梦') != -1 or \
+                                zuowennote_writer.find('小胖纸') != -1 or zuowennote_writer.find('铝汉纸') != -1:
+                    pass
+                else:
+                    chose_listbox.insert(END, zuowennote_sentence + '——' + zuowennote_writer)
+
+
 
 
     yscroll.config(command=chose_listbox.yview)
@@ -1096,11 +1147,11 @@ def button_write_click():
         setting_json = json.load(f)
         f.close()
         if setting_json["mode"] == 'juzimi':
-            label_comefrom = Label(bottombar, text='内容来源：句子迷', font=('思源黑体 CN Normal', 8),
+            label_comefrom = Label(bottombar, text='内容来源：句子迷', font=('思源黑体 CN Regular', 8),
                                    justify=CENTER, anchor=CENTER)
             label_comefrom.pack(side=TOP, expand=NO, fill=NONE, anchor=CENTER)
         elif setting_json["mode"] == 'zuowennote':
-            label_comefrom = Label(bottombar, text='内容来源：作文纸条', font=('思源黑体 CN Normal', 8),
+            label_comefrom = Label(bottombar, text='内容来源：作文纸条', font=('思源黑体 CN Regular', 8),
                                    justify=CENTER, anchor=CENTER)
             label_comefrom.pack(side=TOP, expand=NO, fill=NONE, anchor=CENTER)
         else:
@@ -1133,7 +1184,7 @@ def button_write_click():
             zuowennote_sentencebar.grid(row=1, column=1, sticky=W)
 
             zuowennote_guidebar = Frame(zuowennotebar)
-            guidance_text = ScrolledText(zuowennote_guidebar, relief=FLAT, font=('思源黑体 CN Normal', 16),  # height=6,
+            guidance_text = ScrolledText(zuowennote_guidebar, relief=FLAT, font=('思源黑体 CN Regular', 16),  # height=6,
                                          width=70, bd=0, bg='#f0f0f0')
             guidance_text.insert(END, guidance_str)
             guidance_text.pack(side=TOP, expand=YES, fill=Y, anchor=CENTER, padx=20)
@@ -1146,7 +1197,7 @@ def button_write_click():
         f = open(where_script + '/data/setting.json', 'r')
         setting_json = json.load(f)
         f.close()
-        if setting_json["speaker"] == 'on':
+        if setting_json["speech"] == 'on':
             if writer_str == '':
                 speak_sentence = '在' + book_str + '中曾经有过：' + sentence_str
             elif writer_str != '':
@@ -1208,7 +1259,13 @@ def button_write_click():
             # print(sentencejson)
             zuowennote_sentence = sentencejson["title"]
             zuowennote_writer = sentencejson["author"]
-            chose_listbox.insert(END, zuowennote_sentence + '——' + zuowennote_writer)
+            if sentencejson["content"] == '':
+                pass
+            elif zuowennote_writer.find('纸条') != -1 or zuowennote_writer.find('迢遥旧梦') != -1 or \
+                            zuowennote_writer.find('小胖纸') != -1 or zuowennote_writer.find('铝汉纸') != -1:
+                pass
+            else:
+                chose_listbox.insert(END, zuowennote_sentence + '——' + zuowennote_writer)
 
 
     yscroll.config(command=chose_listbox.yview)
@@ -1247,7 +1304,19 @@ topbar.pack(side=TOP, expand=NO, fill=X)
 top = Frame(root, width=640, height=100)
 label = Label(top, text='每日名句获取器', font=('思源黑体 CN ExtraLight', 48),justify='center', anchor='center')
 label.pack(side=TOP, expand=NO, fill=Y)
-label2 = Label(top, text=nowdate, font=('思源黑体 CN Normal', 14), justify='center', anchor='center')
+dateinfo = StringVar()
+label2 = Label(top, textvariable=dateinfo, font=('思源黑体 CN Regular', 14), justify='center', anchor='center')
+if setting_json["countdown"] == "on":
+    countdown_days = (datetime.date(int(nowyear), 6, 7) - datetime.date(int(nowyear), int(nowmonth), int(nowday))).days
+    if countdown_days < 0:
+        countdown_days = (
+        datetime.date(int(nowyear) + 1, 6, 7) - datetime.date(int(nowyear), int(nowmonth), int(nowday))).days
+    dateinfo.set(nowdate + '\r' + '距离高考还有%s天' % countdown_days)
+    label2['font'] = ('思源黑体 CN Regular', 12)
+    label2['foreground'] = '#001A43'
+else:
+    dateinfo.set(nowdate)
+
 label2.pack(side=BOTTOM, expand=YES, fill=BOTH)
 top.pack(side=TOP, expand=YES, fill=BOTH)
 
@@ -1296,14 +1365,16 @@ if setting_json["once"] == "on":
     if uselog == nowdate:
         button_offline['state'] = DISABLED
         button_write['state'] = DISABLED
-        label2['text'] = '今日已运行过！'
+        dateinfo.set('今日已运行过！')
+        label2['font'] = ('思源黑体 CN Regular', 14)
+        label2['foreground'] = '#EB6159'
     else:
         pass
 # 每日一次模式。
 
 bottom = Frame(root, width=640, height=50, cursor='heart')
-label3 = Label(bottom,text='F.B. Made With ♥  2017-8  V' + setting_json['version']
-               , font=('思源黑体 CN Light', 10),justify='center',anchor='center')
+label3 = Label(bottom, text='F.B. Made With ♥  2017-8  V' + setting_json['version']
+               , font=('思源黑体 CN Light', 10), justify='center', anchor='center')
 label3.pack(side=TOP, expand=NO, fill=Y)
 label4 = Label(bottom,text='Powered by Python3 & Tkinter. 内容取自互联网，不代表程序编写者的立场。'
                , font=('思源黑体 CN Light', 8), justify='center', anchor='center')

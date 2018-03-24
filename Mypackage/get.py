@@ -18,12 +18,22 @@ import codecs
 from bs4 import BeautifulSoup
 import re
 import json
+import datetime
+
+where_script = os.path.split(os.path.realpath(__file__))[0]
+# print(where_script)
+where_rootmenu = where_script[:where_script.rfind('\\')]
+# print(where_rootmenu)
+
+now = datetime.datetime.now()
+nowmonth = now.strftime('%m')
+nowyear = now.strftime('%Y')
+
+f = open(where_rootmenu + '/data/setting.json', 'r')
+setting_json = json.load(f)
+f.close()
 
 def get():
-    where_script = os.path.split(os.path.realpath(__file__))[0]
-    # print(where_script)
-    where_rootmenu = where_script[:where_script.rfind('\\')]
-    # print(where_rootmenu)
     def juzimi():
 
         user_agaents = [
@@ -117,12 +127,9 @@ def get():
 
         return
 
-    def zuowennote():
+    def zuowennote2_0():
 
-        user_agaents = [
-            'CompositionNote/3.0 (iPod touch;iOS 10.3.3; Scale/2.00)',
-            'CompositionNote/3.0 (iPhone;iOS 10.3.2; Scale/2.00)',
-            'CompositionNote/3.0 (iPhone;iOS 10.3.1; Scale/2.00)']
+        user_agaents = setting_json["zn_useragent2.0"]
 
         url = 'http://zhitiao.gaokaowenwen.com/v_2_0/composition/article/list'
         headers = {
@@ -153,17 +160,81 @@ def get():
         print('作文纸条保存完毕!')
         return
 
-    f = open(where_rootmenu + '/data/setting.json', 'r')
-    setting_json = json.load(f)
-    f.close()
+    def zuowennote4_0():
+
+        user_agaents = setting_json["zn_useragent4.0"]
+
+        url = 'http://app.zuowenzhitiao.com/v4_0/article/list?month=%s-%s' % (nowyear, nowmonth)
+        # print(url)
+        ua = random.choice(user_agaents)
+        headers = {
+            "Accept": "*/*",
+            "Accept-Encoding": "gzip, deflate",
+            "Accept-Language": "zh-Hans-CN;q=1, en-CN;q=0.9, ja-JP;q=0.8",
+            "Connection": "keep-alive",
+            "Host": "app.zuowenzhitiao.com",
+            "Proxy-Connection": "keep-alive",
+            "bundleId": "com.squaremount.compositionNote",
+            "platform": "ios",
+            "version": ua[ua.find('Note/')+5:ua.find(' (')],
+            "User-Agent": ua}
+        s = requests.session()
+        response = s.get(url, headers=headers, timeout=10)
+        response.encoding = 'utf-8'  # 修改编码为utf-8
+        r = response.text
+        jsonall = json.loads(r)["data"]
+        for sentence in jsonall:
+            sentence["title"] = sentence["title"].replace('|', '')
+        todaysentence = jsonall[-3:]
+        f = codecs.open(where_rootmenu + '/data/zuowennote_get.json', 'w', 'utf-8')
+        json.dump(todaysentence, f, indent=4, ensure_ascii=False)
+        f.close()
+        pre_month = int(nowmonth)
+        pre_year = int(nowyear)
+        pre_date = datetime.datetime(pre_year, pre_month, 1).strftime('%Y-%m')
+        while pre_date != '2017-01':
+            if pre_year < 2017:
+                break
+            pre_month = pre_month - 1
+            if pre_month == 0:
+                pre_year = pre_year - 1
+                pre_month = 12
+            pre_date = datetime.datetime(pre_year, pre_month, 1).strftime('%Y-%m')
+            url = 'http://app.zuowenzhitiao.com/v4_0/article/list?month=%s' % pre_date
+            # print(url)
+            headers = {
+                "Accept": "*/*",
+                "Accept-Encoding": "gzip, deflate",
+                "Accept-Language": "zh-Hans-CN;q=1, en-CN;q=0.9, ja-JP;q=0.8",
+                "Connection": "keep-alive",
+                "Host": "app.zuowenzhitiao.com",
+                "Proxy-Connection": "keep-alive",
+                "bundleId": "com.squaremount.compositionNote",
+                "platform": "ios",
+                "version": ua[ua.find('Note/') + 5:ua.find(' (')],
+                "User-Agent": ua}
+            s = requests.session()
+            response = s.get(url, headers=headers, timeout=10)
+            response.encoding = 'utf-8'  # 修改编码为utf-8
+            r = response.text
+            pre_month_json = json.loads(r)["data"]
+            for sentence in pre_month_json:
+                sentence["title"] = sentence["title"].replace('|', '')
+            jsonall.extend(pre_month_json)
+        f = codecs.open(where_rootmenu + '/cache/zuowennote.json', 'w', 'utf-8')
+        json.dump(jsonall, f, indent=4, ensure_ascii=False)
+        f.close()
+        print('作文纸条4.0保存完毕!')
+        return
 
     if setting_json["mode"] == 'juzimi':
         juzimi()
     elif setting_json["mode"] == 'zuowennote':
-        zuowennote()
+        if setting_json["zn_mode_chosen"] == '2.0':
+            zuowennote2_0()
+        else:
+            zuowennote4_0()
     else:
         print('配置错误')
         sys.exit(1)
     return
-
-
