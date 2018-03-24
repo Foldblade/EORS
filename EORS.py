@@ -398,9 +398,9 @@ def button_setting_click():
     listbox_countdown.bind("<<ListboxSelect>>", listbox_countdown_show_msg)
 
     countdown_chosen = StringVar()
-    if setting_json["speech"] == 'on':
+    if setting_json["countdown"] == 'on':
         countdown_chosen.set('当前：ON')
-    elif setting_json["speech"] == 'off':
+    elif setting_json["countdown"] == 'off':
         countdown_chosen.set('当前：OFF')
     Label_countdown_follow = Label(setting_area, textvariable=speech_chosen, font=('思源黑体 CN Light', 12))
     Label_countdown_follow.grid(row=2, column=6, sticky=W)
