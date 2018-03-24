@@ -1373,7 +1373,7 @@ if setting_json["once"] == "on":
 # 每日一次模式。
 
 bottom = Frame(root, width=640, height=50, cursor='heart')
-label3 = Label(bottom, text='F.B. Made With ♥  2017-8  V' + setting_json['version']
+label3 = Label(bottom, text='F.B. Made With ♥  2018-3  V' + setting_json['version']
                , font=('思源黑体 CN Light', 10), justify='center', anchor='center')
 label3.pack(side=TOP, expand=NO, fill=Y)
 label4 = Label(bottom,text='Powered by Python3 & Tkinter. 内容取自互联网，不代表程序编写者的立场。'
