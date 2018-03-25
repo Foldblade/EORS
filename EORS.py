@@ -14,6 +14,7 @@ import hashlib
 import requests
 import webbrowser
 import threading
+import random
 from bs4 import BeautifulSoup
 from Mypackage import get
 from Mypackage import back_to_yesterday
@@ -32,7 +33,7 @@ print(nowdate)
 where_script = os.path.split(os.path.realpath(__file__))[0]
 print(where_script)
 
-f = open(where_script+'/data/setting.json', 'r')
+f = open(where_script + '/config/setting.json', 'r')
 setting_json = json.load(f)
 f.close()
 
@@ -190,12 +191,18 @@ def button_setting_click():
             # 特别注释：上一行的注释去掉，点击back_to_ysd按钮，就会print输入的密码！！
             inputpasswd = passwd.get()
             try:
-                str = inputpasswd.encode('utf-8')
-                sha = hashlib.sha256(str)
+                in_put_passwd = inputpasswd.encode('utf-8')
+                sha = hashlib.sha256(in_put_passwd)
                 encrypts = sha.hexdigest()
-                f = codecs.open(where_script+'/safety/password', 'rb', 'utf-8')
-                existpassword = f.read()
-                f.close()
+                try:
+                    f = codecs.open(where_script + '/safety/password', 'rb', 'utf-8')
+                    existpassword = f.read()
+                    f.close()
+                except:
+                    existpassword = ''
+                    tkinter.messagebox.showerror('回到昨日',
+                                                 '出……出错啦 TAT\n你还没有配置管理密码哦\n参考说明配置好了再来吧')
+
                 if encrypts == existpassword:
                     back_to_ysd_change.set('时光机穿越中……')
                     print('Correct! PASS!')
@@ -251,67 +258,67 @@ def button_setting_click():
 
     def button_save_click():
 
-        f = open(where_script+'/data/setting.json', 'r')
+        f = open(where_script+'/config/setting.json', 'r')
         setting_json = json.load(f)
         f.close()
         try:
             try:
                 if listbox_mode_newchosen == '句子迷':
                     setting_json["mode"] = "juzimi"
-                    f = open(where_script+'/data/setting.json', 'w')
+                    f = open(where_script+'/config/setting.json', 'w')
                     json.dump(setting_json, f, indent=4, ensure_ascii=False)
                     f.close()
                 elif listbox_mode_newchosen == '作文纸条':
                     setting_json["mode"] = "zuowennote"
-                    f = open(where_script+'/data/setting.json', 'w')
+                    f = open(where_script+'/config/setting.json', 'w')
                     json.dump(setting_json, f, indent=4, ensure_ascii=False)
                     f.close()
-                savemessage.set('保存啦 QwQ')
+                savemessage.set('已保存，下次生效')
             except:
                 savemessage.set('出了点问题orz')
 
             try:
                 if listbox_once_newchosen == 'ON':
                     setting_json["once"] = "on"
-                    f = open(where_script+'/data/setting.json', 'w')
+                    f = open(where_script+'/config/setting.json', 'w')
                     json.dump(setting_json, f, indent=4, ensure_ascii=False)
                     f.close()
                 elif listbox_once_newchosen == 'OFF':
                     setting_json["once"] = "off"
-                    f = open(where_script+'/data/setting.json', 'w')
+                    f = open(where_script+'/config/setting.json', 'w')
                     json.dump(setting_json, f, indent=4, ensure_ascii=False)
                     f.close()
-                savemessage.set('保存啦 QwQ')
+                savemessage.set('已保存，下次生效')
             except:
                 savemessage.set('出了点问题orz')
 
             try:
                 if listbox_speech_newchosen == 'ON':
                     setting_json["speech"] = "on"
-                    f = open(where_script+'/data/setting.json', 'w')
+                    f = open(where_script+'/config/setting.json', 'w')
                     json.dump(setting_json, f, indent=4, ensure_ascii=False)
                     f.close()
                 elif listbox_speech_newchosen == 'OFF':
                     setting_json["speech"] = "off"
-                    f = open(where_script+'/data/setting.json', 'w')
+                    f = open(where_script+'/config/setting.json', 'w')
                     json.dump(setting_json, f, indent=4, ensure_ascii=False)
                     f.close()
-                savemessage.set('保存啦 QwQ')
+                savemessage.set('已保存，下次生效')
             except:
                 savemessage.set('出了点问题orz')
 
             try:
                 if listbox_countdown_newchosen == 'ON':
                     setting_json["countdown"] = "on"
-                    f = open(where_script+'/data/setting.json', 'w')
+                    f = open(where_script+'/config/setting.json', 'w')
                     json.dump(setting_json, f, indent=4, ensure_ascii=False)
                     f.close()
                 elif listbox_countdown_newchosen == 'OFF':
                     setting_json["countdown"] = "off"
-                    f = open(where_script+'/data/setting.json', 'w')
+                    f = open(where_script+'/config/setting.json', 'w')
                     json.dump(setting_json, f, indent=4, ensure_ascii=False)
                     f.close()
-                savemessage.set('保存啦 QwQ')
+                savemessage.set('已保存，下次生效')
             except:
                 savemessage.set('出了点问题orz')
         except:
@@ -336,7 +343,7 @@ def button_setting_click():
     topbar.pack(side=TOP, expand=NO, fill=X)
 
     setting_area = Frame(setting_window,width=500, height=200)
-    f = open(where_script+'/data/setting.json','r')
+    f = open(where_script+'/config/setting.json','r')
     setting_json = json.load(f)
     f.close()
     Label_mode = Label(setting_area, text='模式选择', font=('思源黑体 CN Regular', 14))
@@ -416,7 +423,7 @@ def button_setting_click():
     bottombar = Frame(setting_window, width=640, height=120)
     savemessage = StringVar()
     savemessage.set('记得保存更改哦↓')
-    labelsave = Label(bottombar, textvariable=savemessage, font=('思源黑体 CN Light', 20))
+    labelsave = Label(bottombar, textvariable=savemessage, font=('思源黑体 CN Light', 18))
     labelsave.pack(side=TOP, expand=NO, fill=NONE, anchor=CENTER)
     savepng = PhotoImage(file=where_script+'/UI/save.png')
     button_save = Button(bottombar, image=savepng, relief=FLAT, cursor='hand2', command=button_save_click)
@@ -446,7 +453,7 @@ def button_offline_click():
 
     def button_next_click():
         backup.backup()
-        f = open(where_script+'/data/setting.json', 'r')
+        f = open(where_script+'/config/setting.json', 'r')
         setting_json = json.load(f)
         f.close()
 
@@ -471,7 +478,7 @@ def button_offline_click():
             return
 
         def button_finish_click():
-            f = open(where_script+'/data/setting.json', 'r')
+            f = open(where_script+'/config/setting.json', 'r')
             setting_json = json.load(f)
             f.close()
 
@@ -530,7 +537,7 @@ def button_offline_click():
 
                 cache_former.close()
 
-                f = open(where_script+'/data/setting.json', 'r')
+                f = open(where_script+'/config/setting.json', 'r')
                 setting_json = json.load(f)
                 f.close()
                 if setting_json["once"] == "on":
@@ -580,7 +587,7 @@ def button_offline_click():
                     else:
                         pass
 
-                f = open(where_script+'/data/setting.json', 'r')
+                f = open(where_script+'/config/setting.json', 'r')
                 setting_json = json.load(f)
                 f.close()
                 if setting_json["once"] == "on":
@@ -604,7 +611,7 @@ def button_offline_click():
         sentencedata = f.read()
         f.close()
 
-        f = open(where_script+'/data/setting.json', 'r')
+        f = open(where_script+'/config/setting.json', 'r')
         setting_json = json.load(f)
         f.close()
 
@@ -702,7 +709,7 @@ def button_offline_click():
         button_finish = Button(bottombar, image=finishpng, relief=FLAT, cursor='hand2', command=button_finish_click)
         button_finish.pack(side=BOTTOM, expand=NO, fill=NONE, anchor=CENTER)
 
-        f = open(where_script+'/data/setting.json', 'r')
+        f = open(where_script+'/config/setting.json', 'r')
         setting_json = json.load(f)
         f.close()
         if setting_json["mode"] == 'juzimi':
@@ -718,7 +725,7 @@ def button_offline_click():
 
         bottombar.pack(side=BOTTOM, expand=YES, fill=BOTH)
 
-        f = open(where_script+'/data/setting.json', 'r')
+        f = open(where_script+'/config/setting.json', 'r')
         setting_json = json.load(f)
         f.close()
 
@@ -753,7 +760,7 @@ def button_offline_click():
             zuowennotebar.pack(side=TOP, expand=YES, fill=Y)
 
         # 朗读功能
-        f = open(where_script + '/data/setting.json', 'r')
+        f = open(where_script + '/config/setting.json', 'r')
         setting_json = json.load(f)
         f.close()
         if setting_json["speech"] == 'on':
@@ -798,7 +805,7 @@ def button_offline_click():
     chose_listbox = Listbox(chosearea, font=('思源黑体 CN Regular', 12),width=50 , bg='#f0f0f0', bd=0,
                             yscrollcommand=yscroll.set, xscrollcommand=xscroll.set)
 
-    f = open(where_script+'/data/setting.json', 'r')
+    f = open(where_script+'/config/setting.json', 'r')
     setting_json = json.load(f)
     f.close()
 
@@ -875,7 +882,7 @@ def button_write_click():
     def button_next_click():
         backup.backup()
         # 执行/Mypackage/backup.py ，进行备份操作
-        f = open(where_script+'/data/setting.json', 'r')
+        f = open(where_script+'/config/setting.json', 'r')
         setting_json = json.load(f)
         f.close()
         # 获取设置内容
@@ -902,7 +909,7 @@ def button_write_click():
             return
 
         def button_finish_click():
-            f = open(where_script+'/data/setting.json', 'r')
+            f = open(where_script+'/config/setting.json', 'r')
             setting_json = json.load(f)
             f.close()
 
@@ -972,7 +979,7 @@ def button_write_click():
                 cache_former.close()
                 sentence_get_file.close()
 
-                f = open(where_script+'/data/setting.json', 'r')
+                f = open(where_script+'/config/setting.json', 'r')
                 setting_json = json.load(f)
                 f.close()
                 if setting_json["once"] == "on":
@@ -1022,7 +1029,7 @@ def button_write_click():
                     else:
                         pass
 
-                f = open(where_script+'/data/setting.json', 'r')
+                f = open(where_script+'/config/setting.json', 'r')
                 setting_json = json.load(f)
                 f.close()
                 if setting_json["once"] == "on":
@@ -1045,7 +1052,7 @@ def button_write_click():
         sentencedata = f.read()
         f.close()
 
-        f = open(where_script+'/data/setting.json', 'r')
+        f = open(where_script+'/config/setting.json', 'r')
         setting_json = json.load(f)
         f.close()
 
@@ -1143,7 +1150,7 @@ def button_write_click():
         button_finish = Button(bottombar, image=finishpng, relief=FLAT, cursor='hand2', command=button_finish_click)
         button_finish.pack(side=BOTTOM, expand=NO, fill=NONE, anchor=CENTER)
 
-        f = open(where_script+'/data/setting.json', 'r')
+        f = open(where_script+'/config/setting.json', 'r')
         setting_json = json.load(f)
         f.close()
         if setting_json["mode"] == 'juzimi':
@@ -1159,7 +1166,7 @@ def button_write_click():
 
         bottombar.pack(side=BOTTOM, expand=YES, fill=BOTH)
 
-        f = open(where_script+'/data/setting.json', 'r')
+        f = open(where_script+'/config/setting.json', 'r')
         setting_json = json.load(f)
         f.close()
 
@@ -1194,7 +1201,7 @@ def button_write_click():
             zuowennotebar.pack(side=TOP, expand=YES, fill=Y)
 
         # 朗读功能
-        f = open(where_script + '/data/setting.json', 'r')
+        f = open(where_script + '/config/setting.json', 'r')
         setting_json = json.load(f)
         f.close()
         if setting_json["speech"] == 'on':
@@ -1241,7 +1248,7 @@ def button_write_click():
     chose_listbox = Listbox(chosearea, font=('思源黑体 CN Regular', 12), width=50, bg='#f0f0f0', bd=0,
                             yscrollcommand=yscroll.set, xscrollcommand=xscroll.set)
 
-    f = open(where_script+'/data/setting.json', 'r')
+    f = open(where_script+'/config/setting.json', 'r')
     setting_json = json.load(f)
     f.close()
 
@@ -1302,7 +1309,7 @@ button_exit.pack(side=TOP, expand=NO, fill=NONE, anchor=E)
 topbar.pack(side=TOP, expand=NO, fill=X)
 
 top = Frame(root, width=640, height=100)
-label = Label(top, text='每日名句获取器', font=('思源黑体 CN ExtraLight', 48),justify='center', anchor='center')
+label = Label(top, text='每日名句获取器', font=('思源黑体 CN ExtraLight', 48), justify='center', anchor='center')
 label.pack(side=TOP, expand=NO, fill=Y)
 dateinfo = StringVar()
 label2 = Label(top, textvariable=dateinfo, font=('思源黑体 CN Regular', 14), justify='center', anchor='center')
@@ -1351,7 +1358,7 @@ label_setting = Label(buttons, text='设置', font=('思源黑体 CN Regular', 1
 label_setting.grid(row=1, column=3)
 label_mail = Label(buttons, text='发送邮件', font=('思源黑体 CN Regular', 12), justify='center', anchor='center')
 label_mail.grid(row=1, column=4)
-label_offline = Label(buttons, text='离线模式', font=('思源黑体 CN Regular', 12), justify='center' ,anchor='center')
+label_offline = Label(buttons, text='离线模式', font=('思源黑体 CN Regular', 12), justify='center', anchor='center')
 label_offline.grid(row=1, column=5)
 label_write = Label(buttons, text='发布句子', font=('思源黑体 CN Regular', 12), justify='center', anchor='center')
 label_write.grid(row=1, column=6)
@@ -1372,19 +1379,27 @@ if setting_json["once"] == "on":
         pass
 # 每日一次模式。
 
+f = open(where_script + '/config/version.json', 'r', encoding='utf-8')
+version_info = json.load(f)
+f.close()
+
 bottom = Frame(root, width=640, height=50, cursor='heart')
-label3 = Label(bottom, text='F.B. Made With ♥  2018-3  V' + setting_json['version']
-               , font=('思源黑体 CN Light', 10), justify='center', anchor='center')
+label3 = Label(bottom, text='F.B. Made With ♥  %s  V%s' % (version_info['date'], version_info['version']),
+               font=('思源黑体 CN Light', 10), justify='center', anchor='center')
 label3.pack(side=TOP, expand=NO, fill=Y)
-label4 = Label(bottom,text='Powered by Python3 & Tkinter. 内容取自互联网，不代表程序编写者的立场。'
-               , font=('思源黑体 CN Light', 8), justify='center', anchor='center')
+if version_info["show_message"] == "on":
+    label4 = Label(bottom, text=version_info["must_message"] + '\n' + random.choice(version_info["message"]),
+                   font=('思源黑体 CN Light', 8), justify='center', anchor='center')
+else:
+    label4 = Label(bottom, text=version_info["must_message"],
+                   font=('思源黑体 CN Light', 8), justify='center', anchor='center')
 label4.pack(side=TOP, expand=YES, fill=Y)
 bottom.pack(side=BOTTOM, expand=YES, fill=Y)
 
 try:
     latest_version = check_update()
-    if setting_json['version'] != latest_version:
-        nv = setting_json['version'].split('.')  # nv:now_version
+    if version_info['version'] != latest_version:
+        nv = version_info['version'].split('.')  # nv:now_version
         lv = latest_version.split('.')  # lv:latest_version
         nvX = int(nv[0])  # nvX:now_version's MAJOR version
         nvY = int(nv[1])  # nvY:now_version's MINOR version
@@ -1397,7 +1412,7 @@ try:
         def update_messagebox():
             if tkinter.messagebox.askyesno("版本更新",
                                            "当前版本是%(nowversion)s\n最新版本是%(newversion)s\n要不要更新一下试试呢？"
-                                                   % {'nowversion': setting_json['version'],
+                                                   % {'nowversion': version_info['version'],
                                                       'newversion': latest_version}) is True:
                 webbrowser.open('https://github.com/Foldblade/EORS/releases')
             return
@@ -1416,7 +1431,6 @@ try:
                 update_messagebox()
 # 总觉得这检查更新的写法好不简洁……啊啊啊啊啊啊orz
 except:
-    pass
-
+    print('检查更新失败')
 
 root.mainloop()

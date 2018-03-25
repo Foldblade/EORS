@@ -29,7 +29,7 @@ now = datetime.datetime.now()
 nowmonth = now.strftime('%m')
 nowyear = now.strftime('%Y')
 
-f = open(where_rootmenu + '/data/setting.json', 'r')
+f = open(where_rootmenu + '/config/setting.json', 'r')
 setting_json = json.load(f)
 f.close()
 

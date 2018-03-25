@@ -30,6 +30,13 @@ F.B. 2017-7
 
 ## 更新日志
 
+### V1.3.1
+想着这很可能是最后一版（要高考了嘛），忙里偷闲再修改几个心里觉得不舒服的地方吧。  
+* 修改：
+    * 对部分变量名的修改
+    * `/data/setting.json`移至`/config/setting.json`，同时删除`"version"`键值，另加入`/config/version.json`存储版本信息和“作者留言”。嫌留言烦的话可以在该文件里把`"show_message":"on"`改为`"show_message":"off"`（这该算新增内容了）。
+* 在“回到昨日”时，如果事先忘记生成密码，现在在按下按钮时会弹出提示。
+
 ### V1.3.0
 * 新增：
     * 高考倒计时  
@@ -37,10 +44,9 @@ F.B. 2017-7
 * 修复在尚未有历史记录时无法到达当年输出目录（如`/output/2018`）的错误，现在会打开根输出目录`/output`。
 * 修改：
     * 对部分变量名的修改
-    * **测试功能**：对[作文纸条](https://itunes.apple.com/cn/app/%E4%BD%9C%E6%96%87%E7%BA%B8%E6%9D%A1/id1207254643) 4.X版本的适配尝试。程序默认使用其2.X~3.X的版本，如需尝试4.X版本，请在`/data/setting.json`中手动修改。同时，对[作文纸条](https://itunes.apple.com/cn/app/%E4%BD%9C%E6%96%87%E7%BA%B8%E6%9D%A1/id1207254643)的User Agents配置移到`setting.json`。  
-      **可能有bug。**我能看到客户端GET方式的请求头里有一个salt，如果说要加入验证的话，那我现在写的这个方法**可能会死**（当然2.X~3.X也不会好到哪去）。  
+    * **测试功能**：对[作文纸条](https://itunes.apple.com/cn/app/%E4%BD%9C%E6%96%87%E7%BA%B8%E6%9D%A1/id1207254643) 4.X版本的适配尝试。程序默认使用其2.X~3.X的版本，如需尝试4.X版本，请在`/data/setting.json`中手动修改。同时，对[作文纸条](https://itunes.apple.com/cn/app/%E4%BD%9C%E6%96%87%E7%BA%B8%E6%9D%A1/id1207254643)的User Agents配置移到`setting.json`。**该功能极可能有bug。**我能看到客户端GET方式的请求头里有一个salt，如果说对方要加入验证的话，那我现在写的这个方法**很可能会死**（当然2.X~3.X也不会好到哪去）。  
       setting.json新增配置说明：
-        * "zn_mode_chosen"：可取值："4.0"、"2.0"（默认），分别对应4.X版本、2.X~3.X版本。
+        * "zn_mode_chosen"：可取值："4.0"、"2.0"（默认），分别对应4.X版本、2.X~3.X版本。要是哪天发现2.X~3.X不能用了就试着修改一下吧。
         * "zn_useragent2.0"：2.X~3.X版本User Agents
         * "zn_useragent4.0"：4.X版本User Agents
         * 请务必注意以下示例中的空格
